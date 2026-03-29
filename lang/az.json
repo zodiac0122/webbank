@@ -1,0 +1,210 @@
+{
+    "site_name": "WebBank",
+    "site_slogan": "Etibarlı İnvestisiya Platforması",
+    "nav": {
+        "home": "Ana Səhifə",
+        "packages": "Paketlər",
+        "about": "Haqqımızda",
+        "login": "Giriş",
+        "register": "Qeydiyyat",
+        "dashboard": "İdarə paneli",
+        "support": "Dəstək",
+        "logout": "Çıxış",
+        "withdrawal": "Çıxarış"
+    },
+    "hero": {
+        "title": "Gələcəyinizə İnvestisiya Edin",
+        "subtitle": "WebBank ilə pulunuzu ağıllı şəkildə artırın. Etibarlı, təhlükəsiz və sərfəli investisiya paketləri.",
+        "cta": "İndi Başlayın",
+        "learn_more": "Daha Ətraflı"
+    },
+    "features": {
+        "title": "Niyə WebBank?",
+        "secure": {
+            "title": "Təhlükəsiz",
+            "desc": "Ən müasir şifrələmə texnologiyaları ilə qorunur"
+        },
+        "profitable": {
+            "title": "Sərfəli",
+            "desc": "Yüksək gəlirli investisiya paketləri"
+        },
+        "fast": {
+            "title": "Sürətli",
+            "desc": "Tez və asan ödəniş və çıxarış sistemi"
+        },
+        "support_title": {
+            "title": "7/24 Dəstək",
+            "desc": "Hər zaman yanınızdayıq"
+        }
+    },
+    "packages_page": {
+        "title": "İnvestisiya Paketləri",
+        "subtitle": "Sizə uyğun paketi seçin və qazanmağa başlayın",
+        "basic": {
+            "name": "Əsas Paket",
+            "desc": "Başlanğıc investorlar üçün ideal seçim"
+        },
+        "standard": {
+            "name": "Standart Paket",
+            "desc": "Orta səviyyəli investorlar üçün"
+        },
+        "premium": {
+            "name": "Premium Paket",
+            "desc": "Maksimum gəlir əldə etmək istəyənlər üçün"
+        },
+        "price": "Qiymət",
+        "daily_profit": "Günlük Gəlir",
+        "total_return": "Ümumi Gəlir",
+        "duration": "Müddət",
+        "days": "gün",
+        "buy_now": "İndi Al",
+        "profit_percent": "Gəlir Faizi",
+        "per_day": "gündə"
+    },
+    "auth": {
+        "login_title": "Hesabınıza Daxil Olun",
+        "register_title": "Yeni Hesab Yaradın",
+        "email": "Email ünvanı",
+        "password": "Şifrə",
+        "full_name": "Ad Soyad",
+        "referral_code": "Referral kodu (istəyə bağlı)",
+        "login_btn": "Daxil Ol",
+        "register_btn": "Qeydiyyat",
+        "no_account": "Hesabınız yoxdur?",
+        "has_account": "Artıq hesabınız var?",
+        "login_link": "Daxil olun",
+        "register_link": "Qeydiyyatdan keçin",
+        "bonus_info": "🎁 Qeydiyyatdan sonra 10 AZN bonus!"
+    },
+    "dashboard_page": {
+        "title": "İdarə Paneli",
+        "balance": "Balans",
+        "earnings": "Ümumi Gəlir",
+        "active_packages": "Aktiv Paketlər",
+        "referrals": "Referrallar",
+        "recent_activity": "Son Fəaliyyət",
+        "package_name": "Paket",
+        "remaining_days": "Qalan Günlər",
+        "earned": "Qazanılıb",
+        "daily_income": "Günlük Gəlir",
+        "no_active": "Aktiv paketiniz yoxdur",
+        "history": "Tarixçə",
+        "registration_date": "Qeydiyyat Tarixi",
+        "notifications": "Bildirişlər",
+        "no_notifications": "Bildiriş yoxdur"
+    },
+    "payment_page": {
+        "title": "Ödəniş Et",
+        "subtitle": "Aşağıda göstərilən karta ödəniş edin və qəbzi yükləyin",
+        "full_name": "Ad Soyad",
+        "email": "Email",
+        "phone": "Telefon nömrəsi",
+        "card_info": "Ödəniş kartı",
+        "upload_receipt": "Qəbzi yükləyin",
+        "submit": "Ödənişi Göndər",
+        "selected_package": "Seçilmiş Paket",
+        "amount": "Məbləğ",
+        "note": "Qeyd: Ödəniş admin tərəfindən təsdiqlədikdən sonra paketiniz aktivləşəcək."
+    },
+    "withdrawal_page": {
+        "title": "Çıxarış",
+        "subtitle": "Balansınızdan pul çıxarın",
+        "amount": "Məbləğ (minimum 25 AZN)",
+        "email": "Email",
+        "phone": "Telefon (+994 formatında)",
+        "card_number": "Kart nömrəsi",
+        "submit": "Çıxarış Sorğusu Göndər",
+        "monday_only": "⚠️ Çıxarış yalnız Bazar ertəsi günləri mümkündür",
+        "min_amount": "Minimum çıxarış: 25 AZN",
+        "your_balance": "Balansınız"
+    },
+    "referral_page": {
+        "title": "Referral Proqramı",
+        "your_link": "Sizin referral linkiniz",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı!",
+        "total_referrals": "Toplam Referral",
+        "total_bonus": "Toplam Bonus",
+        "per_referral": "Hər referral üçün +5 AZN",
+        "invite_friends": "Dostlarınızı dəvət edin"
+    },
+    "support_page": {
+        "title": "Canlı Dəstək",
+        "subtitle": "Mesaj göndərin, ən qısa zamanda cavab verəcəyik",
+        "type_message": "Mesajınızı yazın...",
+        "send": "Göndər",
+        "admin": "Admin",
+        "you": "Siz"
+    },
+    "about_page": {
+        "title": "Haqqımızda",
+        "subtitle": "WebBank - Etibarlı İnvestisiya Partnyorunuz",
+        "content": {
+            "p1": "WebBank, müasir maliyyə texnologiyalarından istifadə edərək istifadəçilərinə etibarlı və sərfəli investisiya imkanları təqdim edən innovativ bir platformadır.",
+            "p2": "Missiyamız, hər kəsin gəlirini artırmasına kömək etmək və maliyyə azadlığına çatmasını dəstəkləməkdir. Biz müştərilərimizin etibarını ən yüksək dəyər hesab edirik.",
+            "p3": "Təcrübəli maliyyə mütəxəssislərimiz tərəfindən idarə olunan platformamız, ən müasir təhlükəsizlik standartlarına uyğun olaraq fəaliyyət göstərir.",
+            "p4": "WebBank ailəsinə qoşulun və pulunuzun sizin üçün işləməsinə icazə verin."
+        },
+        "stats": {
+            "users": "İstifadəçi",
+            "invested": "İnvestisiya",
+            "paid_out": "Ödənildi",
+            "uptime": "İş Vaxtı"
+        },
+        "values": {
+            "title": "Dəyərlərimiz",
+            "trust": "Etibar",
+            "trust_desc": "Müştəri etibarı bizim prioritetimizdir",
+            "transparency": "Şəffaflıq",
+            "transparency_desc": "Bütün əməliyyatlar tam şəffaf şəkildə aparılır",
+            "security": "Təhlükəsizlik",
+            "security_desc": "Məlumatlarınız ən yüksək standartlarla qorunur"
+        }
+    },
+    "admin": {
+        "title": "Admin Paneli",
+        "login_title": "Admin Girişi",
+        "stats": "Statistika",
+        "users": "İstifadəçilər",
+        "payments": "Ödənişlər",
+        "withdrawals": "Çıxarışlar",
+        "support": "Dəstək",
+        "notifications": "Bildirişlər",
+        "approve": "Təsdiqlə",
+        "reject": "Rədd Et",
+        "pending": "Gözləyir",
+        "approved": "Təsdiqləndi",
+        "rejected": "Rədd edildi",
+        "total_users": "Ümumi İstifadəçilər",
+        "pending_payments": "Gözləyən Ödənişlər",
+        "pending_withdrawals": "Gözləyən Çıxarışlar",
+        "total_balance": "Ümumi Balans",
+        "active_packages": "Aktiv Paketlər",
+        "unread_messages": "Oxunmamış Mesajlar",
+        "receipt": "Qəbz",
+        "view": "Bax",
+        "reply": "Cavab ver",
+        "user_email": "İstifadəçi Email",
+        "amount": "Məbləğ",
+        "date": "Tarix",
+        "status": "Status",
+        "action": "Əməliyyat"
+    },
+    "common": {
+        "azn": "AZN",
+        "loading": "Yüklənir...",
+        "error": "Xəta baş verdi",
+        "success": "Uğurlu",
+        "close": "Bağla",
+        "cancel": "Ləğv Et",
+        "confirm": "Təsdiqlə",
+        "back": "Geri",
+        "language": "Dil"
+    },
+    "footer": {
+        "copyright": "© 2024 WebBank. Bütün hüquqlar qorunur.",
+        "privacy": "Məxfilik Siyasəti",
+        "terms": "İstifadə Şərtləri",
+        "contact": "Əlaqə"
+    }
+}

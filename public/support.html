@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebBank - Canlı Dəstək</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo"><span class="logo-icon">🏦</span><span>WebBank</span></a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/" data-i18n="nav.home">Ana Səhifə</a></li>
+                <li><a href="/dashboard" data-i18n="nav.dashboard">İdarə paneli</a></li>
+                <li><a href="/support" class="active" data-i18n="nav.support">Dəstək</a></li>
+                <li><a href="#" class="logout-btn" data-i18n="nav.logout">Çıxış</a></li>
+                <li id="lang-container"></li>
+            </ul>
+            <div class="menu-toggle" id="menu-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="chat-container">
+        <div class="section-header" style="padding-top: 0;">
+            <h2 data-i18n="support_page.title">Canlı Dəstək</h2>
+            <p data-i18n="support_page.subtitle">Mesaj göndərin, ən qısa zamanda cavab verəcəyik</p>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+            <div class="empty-state">
+                <span class="empty-icon">💬</span>
+                <p>Söhbətə başlamaq üçün mesaj göndərin</p>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <input type="text" class="form-control" id="message-input"
+                   data-i18n="support_page.type_message" placeholder="Mesajınızı yazın..."
+                   maxlength="1000">
+            <button class="btn btn-primary" id="send-btn" onclick="sendMessage()" data-i18n="support_page.send">Göndər</button>
+        </div>
+    </div>
+
+    <script src="/js/i18n.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        let refreshInterval;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const langContainer = document.getElementById('lang-container');
+            if (langContainer) langContainer.innerHTML = I18n.createSelector();
+
+            if (!App.user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            loadMessages();
+            refreshInterval = setInterval(loadMessages, 5000);
+
+            // Enter ilə göndər
+            document.getElementById('message-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+        });
+
+        async function loadMessages() {
+            try {
+                const data = await App.apiRequest('/api/support');
+                const container = document.getElementById('chat-messages');
+
+                if (data.messages.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <span class="empty-icon">💬</span>
+                            <p>Söhbətə başlamaq üçün mesaj göndərin</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = data.messages.map(msg => {
+                    const isUser = msg.sender_type === 'user';
+                    const time = new Date(msg.created_at).toLocaleTimeString('az-AZ', {
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    const date = new Date(msg.created_at).toLocaleDateString('az-AZ');
+
+                    return `
+                    <div class="chat-message ${isUser ? 'user' : 'admin'}">
+                        <div style="font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">
+                            ${isUser ? (I18n.t('support_page.you') || 'Siz') : '🛡️ ' + (I18n.t('support_page.admin') || 'Admin')}
+                        </div>
+                        ${msg.message}
+                        <span class="message-time">${date} ${time}</span>
+                    </div>`;
+                }).join('');
+
+                container.scrollTop = container.scrollHeight;
+            } catch (error) {
+                console.error('Mesaj yükləmə xətası:', error);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const btn = document.getElementById('send-btn');
+            App.showLoading(btn);
+
+            try {
+                await App.apiRequest('/api/support', {
+                    method: 'POST',
+                    body: JSON.stringify({ message })
+                });
+                input.value = '';
+                await loadMessages();
+            } catch (error) {
+                App.showNotification(error.message, 'error');
+            } finally {
+                App.hideLoading(btn);
+            }
+        }
+    </script>
+</body>
+</html>

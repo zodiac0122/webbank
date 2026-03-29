@@ -1,0 +1,181 @@
+{
+    "site_name": "WebBank",
+    "site_slogan": "Reliable Investment Platform",
+    "nav": {
+        "home": "Home",
+        "packages": "Packages",
+        "about": "About",
+        "login": "Login",
+        "register": "Register",
+        "dashboard": "Dashboard",
+        "support": "Support",
+        "logout": "Logout",
+        "withdrawal": "Withdrawal"
+    },
+    "hero": {
+        "title": "Invest in Your Future",
+        "subtitle": "Grow your money wisely with WebBank. Reliable, secure, and profitable investment packages.",
+        "cta": "Get Started",
+        "learn_more": "Learn More"
+    },
+    "features": {
+        "title": "Why WebBank?",
+        "secure": { "title": "Secure", "desc": "Protected by the latest encryption technologies" },
+        "profitable": { "title": "Profitable", "desc": "High-yield investment packages" },
+        "fast": { "title": "Fast", "desc": "Quick and easy payment and withdrawal system" },
+        "support_title": { "title": "24/7 Support", "desc": "We're always here for you" }
+    },
+    "packages_page": {
+        "title": "Investment Packages",
+        "subtitle": "Choose the right package and start earning",
+        "basic": { "name": "Basic Package", "desc": "Ideal choice for beginner investors" },
+        "standard": { "name": "Standard Package", "desc": "For mid-level investors" },
+        "premium": { "name": "Premium Package", "desc": "For those who want maximum returns" },
+        "price": "Price",
+        "daily_profit": "Daily Profit",
+        "total_return": "Total Return",
+        "duration": "Duration",
+        "days": "days",
+        "buy_now": "Buy Now",
+        "profit_percent": "Profit Percentage",
+        "per_day": "per day"
+    },
+    "auth": {
+        "login_title": "Login to Your Account",
+        "register_title": "Create New Account",
+        "email": "Email Address",
+        "password": "Password",
+        "full_name": "Full Name",
+        "referral_code": "Referral code (optional)",
+        "login_btn": "Login",
+        "register_btn": "Register",
+        "no_account": "Don't have an account?",
+        "has_account": "Already have an account?",
+        "login_link": "Login",
+        "register_link": "Register",
+        "bonus_info": "🎁 10 AZN bonus after registration!"
+    },
+    "dashboard_page": {
+        "title": "Dashboard",
+        "balance": "Balance",
+        "earnings": "Total Earnings",
+        "active_packages": "Active Packages",
+        "referrals": "Referrals",
+        "recent_activity": "Recent Activity",
+        "package_name": "Package",
+        "remaining_days": "Remaining Days",
+        "earned": "Earned",
+        "daily_income": "Daily Income",
+        "no_active": "No active packages",
+        "history": "History",
+        "registration_date": "Registration Date",
+        "notifications": "Notifications",
+        "no_notifications": "No notifications"
+    },
+    "payment_page": {
+        "title": "Make Payment",
+        "subtitle": "Pay to the card shown below and upload your receipt",
+        "full_name": "Full Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "card_info": "Payment Card",
+        "upload_receipt": "Upload Receipt",
+        "submit": "Submit Payment",
+        "selected_package": "Selected Package",
+        "amount": "Amount",
+        "note": "Note: Your package will be activated after admin approval."
+    },
+    "withdrawal_page": {
+        "title": "Withdrawal",
+        "subtitle": "Withdraw funds from your balance",
+        "amount": "Amount (minimum 25 AZN)",
+        "email": "Email",
+        "phone": "Phone (+994 format)",
+        "card_number": "Card Number",
+        "submit": "Submit Withdrawal Request",
+        "monday_only": "⚠️ Withdrawals are only available on Mondays",
+        "min_amount": "Minimum withdrawal: 25 AZN",
+        "your_balance": "Your Balance"
+    },
+    "referral_page": {
+        "title": "Referral Program",
+        "your_link": "Your referral link",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "total_referrals": "Total Referrals",
+        "total_bonus": "Total Bonus",
+        "per_referral": "+5 AZN per referral",
+        "invite_friends": "Invite your friends"
+    },
+    "support_page": {
+        "title": "Live Support",
+        "subtitle": "Send us a message, we'll respond as soon as possible",
+        "type_message": "Type your message...",
+        "send": "Send",
+        "admin": "Admin",
+        "you": "You"
+    },
+    "about_page": {
+        "title": "About Us",
+        "subtitle": "WebBank - Your Reliable Investment Partner",
+        "content": {
+            "p1": "WebBank is an innovative platform that provides reliable and profitable investment opportunities using modern financial technologies.",
+            "p2": "Our mission is to help everyone increase their income and achieve financial freedom. We value our customers' trust above all else.",
+            "p3": "Our platform is managed by experienced financial specialists and operates in accordance with the highest security standards.",
+            "p4": "Join the WebBank family and let your money work for you."
+        },
+        "stats": { "users": "Users", "invested": "Invested", "paid_out": "Paid Out", "uptime": "Uptime" },
+        "values": {
+            "title": "Our Values",
+            "trust": "Trust", "trust_desc": "Customer trust is our priority",
+            "transparency": "Transparency", "transparency_desc": "All operations are conducted transparently",
+            "security": "Security", "security_desc": "Your data is protected by the highest standards"
+        }
+    },
+    "admin": {
+        "title": "Admin Panel",
+        "login_title": "Admin Login",
+        "stats": "Statistics",
+        "users": "Users",
+        "payments": "Payments",
+        "withdrawals": "Withdrawals",
+        "support": "Support",
+        "notifications": "Notifications",
+        "approve": "Approve",
+        "reject": "Reject",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "total_users": "Total Users",
+        "pending_payments": "Pending Payments",
+        "pending_withdrawals": "Pending Withdrawals",
+        "total_balance": "Total Balance",
+        "active_packages": "Active Packages",
+        "unread_messages": "Unread Messages",
+        "receipt": "Receipt",
+        "view": "View",
+        "reply": "Reply",
+        "user_email": "User Email",
+        "amount": "Amount",
+        "date": "Date",
+        "status": "Status",
+        "action": "Action"
+    },
+    "common": {
+        "azn": "AZN",
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "success": "Success",
+        "close": "Close",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "back": "Back",
+        "language": "Language"
+    },
+    "footer": {
+        "copyright": "© 2024 WebBank. All rights reserved.",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "contact": "Contact"
+    }
+}

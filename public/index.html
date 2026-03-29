@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebBank - Etibarlı İnvestisiya Platforması. Ağıllı investisiya paketləri ilə gəlirinizi artırın.">
+    <title data-i18n="site_name">WebBank - İnvestisiya Platforması</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Naviqasiya / Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">
+                <span class="logo-icon">🏦</span>
+                <span>WebBank</span>
+            </a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/" class="active" data-i18n="nav.home">Ana Səhifə</a></li>
+                <li><a href="/packages" data-i18n="nav.packages">Paketlər</a></li>
+                <li><a href="/about" data-i18n="nav.about">Haqqımızda</a></li>
+                <li class="nav-guest"><a href="/login" data-i18n="nav.login">Giriş</a></li>
+                <li class="nav-guest"><a href="/register" class="nav-btn" data-i18n="nav.register">Qeydiyyat</a></li>
+                <li class="nav-auth" style="display:none"><a href="/dashboard" data-i18n="nav.dashboard">İdarə paneli</a></li>
+                <li class="nav-auth" style="display:none"><a href="/support" data-i18n="nav.support">Dəstək</a></li>
+                <li class="nav-auth" style="display:none"><a href="#" class="logout-btn" data-i18n="nav.logout">Çıxış</a></li>
+                <li id="lang-container"></li>
+            </ul>
+            <div class="menu-toggle" id="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Bölməsi -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 data-i18n="hero.title">Gələcəyinizə İnvestisiya Edin</h1>
+            <p data-i18n="hero.subtitle">WebBank ilə pulunuzu ağıllı şəkildə artırın. Etibarlı, təhlükəsiz və sərfəli investisiya paketləri.</p>
+            <div class="hero-buttons">
+                <a href="/register" class="btn btn-primary btn-lg" data-i18n="hero.cta">İndi Başlayın</a>
+                <a href="/about" class="btn btn-secondary btn-lg" data-i18n="hero.learn_more">Daha Ətraflı</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Xüsusiyyətlər / Features -->
+    <section class="features">
+        <div class="section-header">
+            <h2 data-i18n="features.title">Niyə WebBank?</h2>
+        </div>
+        <div class="features-grid">
+            <div class="card feature-card animate-on-scroll">
+                <span class="feature-icon">🔒</span>
+                <h3 data-i18n="features.secure.title">Təhlükəsiz</h3>
+                <p data-i18n="features.secure.desc">Ən müasir şifrələmə texnologiyaları ilə qorunur</p>
+            </div>
+            <div class="card feature-card animate-on-scroll">
+                <span class="feature-icon">💰</span>
+                <h3 data-i18n="features.profitable.title">Sərfəli</h3>
+                <p data-i18n="features.profitable.desc">Yüksək gəlirli investisiya paketləri</p>
+            </div>
+            <div class="card feature-card animate-on-scroll">
+                <span class="feature-icon">⚡</span>
+                <h3 data-i18n="features.fast.title">Sürətli</h3>
+                <p data-i18n="features.fast.desc">Tez və asan ödəniş və çıxarış sistemi</p>
+            </div>
+            <div class="card feature-card animate-on-scroll">
+                <span class="feature-icon">🎧</span>
+                <h3 data-i18n="features.support_title.title">7/24 Dəstək</h3>
+                <p data-i18n="features.support_title.desc">Hər zaman yanınızdayıq</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Paketlər önizləmə / Packages preview -->
+    <section class="packages-section">
+        <div class="section-header">
+            <h2 data-i18n="packages_page.title">İnvestisiya Paketləri</h2>
+            <p data-i18n="packages_page.subtitle">Sizə uyğun paketi seçin və qazanmağa başlayın</p>
+        </div>
+        <div class="packages-grid" id="home-packages">
+            <!-- Paketlər JS ilə yüklənəcək -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">🏦 WebBank</div>
+            <ul class="footer-links">
+                <li><a href="/about" data-i18n="nav.about">Haqqımızda</a></li>
+                <li><a href="/packages" data-i18n="nav.packages">Paketlər</a></li>
+                <li><a href="/support" data-i18n="nav.support">Dəstək</a></li>
+            </ul>
+        </div>
+        <div class="footer-bottom" data-i18n="footer.copyright">
+            © 2024 WebBank. Bütün hüquqlar qorunur.
+        </div>
+    </footer>
+
+    <script src="/js/i18n.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        // Dil seçicisini əlavə et
+        document.addEventListener('DOMContentLoaded', () => {
+            const langContainer = document.getElementById('lang-container');
+            if (langContainer) {
+                langContainer.innerHTML = I18n.createSelector();
+            }
+
+            // Paketləri yüklə
+            loadHomePackages();
+
+            // Scroll effekti
+            window.addEventListener('scroll', () => {
+                const navbar = document.getElementById('navbar');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        });
+
+        async function loadHomePackages() {
+            try {
+                const res = await fetch('/api/packages');
+                const data = await res.json();
+                const container = document.getElementById('home-packages');
+
+                const packageNames = {
+                    basic: { az: 'Əsas Paket', ru: 'Базовый Пакет', en: 'Basic Package' },
+                    standard: { az: 'Standart Paket', ru: 'Стандартный Пакет', en: 'Standard Package' },
+                    premium: { az: 'Premium Paket', ru: 'Премиум Пакет', en: 'Premium Package' }
+                };
+
+                const packageDescs = {
+                    basic: { az: 'Başlanğıc investorlar üçün ideal', ru: 'Идеально для начинающих', en: 'Ideal for beginners' },
+                    standard: { az: 'Orta səviyyəli investorlar üçün', ru: 'Для опытных инвесторов', en: 'For mid-level investors' },
+                    premium: { az: 'Maksimum gəlir əldə etmək üçün', ru: 'Для максимального дохода', en: 'For maximum returns' }
+                };
+
+                container.innerHTML = data.packages.map((pkg, i) => {
+                    const lang = I18n.currentLang || 'az';
+                    const name = packageNames[pkg.name_key]?.[lang] || pkg.name_key;
+                    const desc = packageDescs[pkg.name_key]?.[lang] || '';
+                    const dailyProfit = pkg.daily_profit_fixed
+                        ? `${pkg.daily_profit_fixed.toFixed(2)} AZN`
+                        : `${pkg.daily_profit_percent}%`;
+                    const isFeatured = i === 2;
+
+                    return `
+                    <div class="card package-card ${isFeatured ? 'featured' : ''} animate-on-scroll">
+                        ${isFeatured ? '<span class="package-badge">⭐ TOP</span>' : ''}
+                        <div class="package-header">
+                            <h3>${name}</h3>
+                            <p>${desc}</p>
+                        </div>
+                        <div class="package-price">
+                            <span class="price">${pkg.price}</span>
+                            <span class="currency"> AZN</span>
+                        </div>
+                        <div class="package-details">
+                            <div class="package-detail-item">
+                                <span class="label" data-i18n="packages_page.profit_percent">Gəlir Faizi</span>
+                                <span class="value">${pkg.profit_percent}%</span>
+                            </div>
+                            <div class="package-detail-item">
+                                <span class="label" data-i18n="packages_page.daily_profit">Günlük Gəlir</span>
+                                <span class="value">${dailyProfit}</span>
+                            </div>
+                            <div class="package-detail-item">
+                                <span class="label" data-i18n="packages_page.total_return">Ümumi Gəlir</span>
+                                <span class="value">${pkg.total_return} AZN</span>
+                            </div>
+                            <div class="package-detail-item">
+                                <span class="label" data-i18n="packages_page.duration">Müddət</span>
+                                <span class="value">${pkg.duration_days} gün</span>
+                            </div>
+                        </div>
+                        <div class="package-footer">
+                            <a href="/payment?package=${pkg.id}" class="btn ${isFeatured ? 'btn-gold' : 'btn-primary'} btn-block" data-i18n="packages_page.buy_now">İndi Al</a>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                // Scroll animasiyalarını yenidən başlat
+                App.setupAnimations();
+            } catch (error) {
+                console.error('Paket yükləmə xətası:', error);
+            }
+        }
+    </script>
+</body>
+</html>

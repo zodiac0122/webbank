@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebBank-da yeni hesab yaradın və 10 AZN bonus qazanın">
+    <title>WebBank - Qeydiyyat</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo"><span class="logo-icon">🏦</span><span>WebBank</span></a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/" data-i18n="nav.home">Ana Səhifə</a></li>
+                <li><a href="/packages" data-i18n="nav.packages">Paketlər</a></li>
+                <li><a href="/about" data-i18n="nav.about">Haqqımızda</a></li>
+                <li><a href="/login" data-i18n="nav.login">Giriş</a></li>
+                <li><a href="/register" class="nav-btn active" data-i18n="nav.register">Qeydiyyat</a></li>
+                <li id="lang-container"></li>
+            </ul>
+            <div class="menu-toggle" id="menu-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <div class="form-card" style="animation: fadeInUp 0.6s ease">
+            <h2 data-i18n="auth.register_title">Yeni Hesab Yaradın</h2>
+            <p class="form-subtitle">WebBank investisiya platforması</p>
+
+            <div class="bonus-badge" data-i18n="auth.bonus_info">
+                🎁 Qeydiyyatdan sonra 10 AZN bonus!
+            </div>
+
+            <div class="error-message" id="error-msg"></div>
+
+            <form id="register-form" autocomplete="on">
+                <div class="form-group">
+                    <label data-i18n="auth.full_name">Ad Soyad</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" required
+                           placeholder="Ad Soyad" autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="auth.email">Email ünvanı</label>
+                    <input type="email" class="form-control" id="email" name="email" required
+                           placeholder="ornek@email.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="auth.password">Şifrə</label>
+                    <input type="password" class="form-control" id="password" name="password" required
+                           minlength="6" placeholder="Minimum 6 simvol" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="auth.referral_code">Referral kodu (istəyə bağlı)</label>
+                    <input type="text" class="form-control" id="referral_code" name="referral_code"
+                           placeholder="Referral kodunuz varsa daxil edin">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg" id="register-btn" data-i18n="auth.register_btn">
+                    Qeydiyyat
+                </button>
+            </form>
+
+            <p class="form-text">
+                <span data-i18n="auth.has_account">Artıq hesabınız var?</span>
+                <a href="/login" data-i18n="auth.login_link">Daxil olun</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="/js/i18n.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const langContainer = document.getElementById('lang-container');
+            if (langContainer) langContainer.innerHTML = I18n.createSelector();
+
+            // URL-dən referral kodu al
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (refCode) {
+                document.getElementById('referral_code').value = refCode;
+            }
+
+            // Artıq giriş edibsə dashboard-a yönləndir
+            if (App.user) {
+                window.location.href = '/dashboard';
+                return;
+            }
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('register-btn');
+            const errorMsg = document.getElementById('error-msg');
+            errorMsg.style.display = 'none';
+
+            App.showLoading(btn);
+
+            try {
+                const data = await App.apiRequest('/api/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        full_name: document.getElementById('full_name').value,
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value,
+                        referral_code: document.getElementById('referral_code').value
+                    })
+                });
+
+                if (data.success) {
+                    App.showNotification(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 500);
+                }
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                App.hideLoading(btn);
+            }
+        });
+    </script>
+</body>
+</html>

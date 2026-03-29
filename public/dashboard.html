@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebBank - İdarə Paneli</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo"><span class="logo-icon">🏦</span><span>WebBank</span></a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/" data-i18n="nav.home">Ana Səhifə</a></li>
+                <li><a href="/packages" data-i18n="nav.packages">Paketlər</a></li>
+                <li><a href="/dashboard" class="active" data-i18n="nav.dashboard">İdarə paneli</a></li>
+                <li><a href="/withdrawal" data-i18n="nav.withdrawal">Çıxarış</a></li>
+                <li><a href="/support" data-i18n="nav.support">Dəstək</a></li>
+                <li><a href="#" class="logout-btn" data-i18n="nav.logout">Çıxış</a></li>
+                <li id="lang-container"></li>
+            </ul>
+            <div class="menu-toggle" id="menu-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1 data-i18n="dashboard_page.title">İdarə Paneli</h1>
+            <p id="welcome-text"></p>
+        </div>
+
+        <!-- Statistika Kartlarları -->
+        <div class="stats-grid" id="stats-grid">
+            <div class="card stat-card">
+                <div class="stat-icon blue">💰</div>
+                <div class="stat-info">
+                    <h3 data-i18n="dashboard_page.balance">Balans</h3>
+                    <div class="stat-value text-blue" id="stat-balance">0.00 AZN</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon green">📈</div>
+                <div class="stat-info">
+                    <h3 data-i18n="dashboard_page.earnings">Ümumi Gəlir</h3>
+                    <div class="stat-value text-green" id="stat-earnings">0.00 AZN</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon purple">📦</div>
+                <div class="stat-info">
+                    <h3 data-i18n="dashboard_page.active_packages">Aktiv Paketlər</h3>
+                    <div class="stat-value text-purple" id="stat-packages">0</div>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="stat-icon amber">👥</div>
+                <div class="stat-info">
+                    <h3 data-i18n="dashboard_page.referrals">Referrallar</h3>
+                    <div class="stat-value text-amber" id="stat-referrals">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Sol tərəf - Aktiv Paketlər -->
+            <div>
+                <div class="dashboard-section">
+                    <div class="section-title">📦 <span data-i18n="dashboard_page.active_packages">Aktiv Paketlər</span></div>
+                    <div id="active-packages-list">
+                        <div class="empty-state">
+                            <span class="empty-icon">📭</span>
+                            <p data-i18n="dashboard_page.no_active">Aktiv paketiniz yoxdur</p>
+                            <a href="/packages" class="btn btn-primary btn-sm mt-2" data-i18n="packages_page.buy_now">İndi Al</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarixçə -->
+                <div class="dashboard-section" style="margin-top: 32px;">
+                    <div class="section-title">📋 <span data-i18n="dashboard_page.history">Tarixçə</span></div>
+                    <div class="card">
+                        <div class="table-container">
+                            <table class="data-table" id="history-table">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="admin.date">Tarix</th>
+                                        <th>Tip</th>
+                                        <th data-i18n="admin.amount">Məbləğ</th>
+                                        <th data-i18n="admin.status">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-body">
+                                    <tr><td colspan="4" class="text-center text-muted" style="padding: 24px;">Tarixçə yüklənir...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ tərəf -->
+            <div>
+                <!-- Referral -->
+                <div class="card mb-3">
+                    <div class="section-title">🔗 <span data-i18n="referral_page.title">Referral Proqramı</span></div>
+                    <p class="text-muted mb-2" data-i18n="referral_page.per_referral">Hər referral üçün +5 AZN</p>
+                    <div class="referral-link-box">
+                        <input type="text" id="referral-link" readonly value="">
+                        <button class="btn btn-primary btn-sm" onclick="copyReferralLink()" data-i18n="referral_page.copy">Kopyala</button>
+                    </div>
+                    <div class="d-flex justify-between mt-2">
+                        <span class="text-muted" data-i18n="referral_page.total_referrals">Toplam Referral</span>
+                        <span class="fw-bold" id="referral-count">0</span>
+                    </div>
+                    <div class="d-flex justify-between mt-1">
+                        <span class="text-muted" data-i18n="referral_page.total_bonus">Toplam Bonus</span>
+                        <span class="fw-bold text-green" id="referral-bonus">0 AZN</span>
+                    </div>
+                </div>
+
+                <!-- Bildirişlər -->
+                <div class="card">
+                    <div class="section-title">🔔 <span data-i18n="dashboard_page.notifications">Bildirişlər</span>
+                        <span class="badge badge-pending" id="unread-badge" style="display:none"></span>
+                    </div>
+                    <div id="notifications-list">
+                        <p class="text-muted text-center" data-i18n="dashboard_page.no_notifications">Bildiriş yoxdur</p>
+                    </div>
+                </div>
+
+                <!-- Qeydiyyat tarixi -->
+                <div class="card mt-3">
+                    <div class="section-title">📅 <span data-i18n="dashboard_page.registration_date">Qeydiyyat Tarixi</span></div>
+                    <p id="reg-date" class="text-muted"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/i18n.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        const packageNames = {
+            basic: { az: 'Əsas Paket', ru: 'Базовый Пакет', en: 'Basic Package' },
+            standard: { az: 'Standart Paket', ru: 'Стандартный Пакет', en: 'Standard Package' },
+            premium: { az: 'Premium Paket', ru: 'Премиум Пакет', en: 'Premium Package' }
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const langContainer = document.getElementById('lang-container');
+            if (langContainer) langContainer.innerHTML = I18n.createSelector();
+
+            if (!App.user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            loadDashboard();
+            loadHistory();
+        });
+
+        async function loadDashboard() {
+            try {
+                const data = await App.apiRequest('/api/user/dashboard');
+                const lang = I18n.currentLang || 'az';
+
+                // Statistikalar
+                document.getElementById('stat-balance').textContent = parseFloat(data.user.balance).toFixed(2) + ' AZN';
+                document.getElementById('stat-earnings').textContent = parseFloat(data.user.total_earnings).toFixed(2) + ' AZN';
+                document.getElementById('stat-packages').textContent = data.activePackages.length;
+                document.getElementById('stat-referrals').textContent = data.referralCount;
+                document.getElementById('welcome-text').textContent = `${data.user.full_name || data.user.email}`;
+                document.getElementById('reg-date').textContent = App.formatDate(data.user.created_at);
+
+                // Referral
+                document.getElementById('referral-link').value = window.location.origin + '/register?ref=' + data.user.referral_code;
+                document.getElementById('referral-count').textContent = data.referralCount;
+                document.getElementById('referral-bonus').textContent = data.referralBonus + ' AZN';
+
+                // Aktiv paketlər
+                const packagesList = document.getElementById('active-packages-list');
+                if (data.activePackages.length > 0) {
+                    packagesList.innerHTML = data.activePackages.map(pkg => {
+                        const name = packageNames[pkg.name_key]?.[lang] || pkg.name_key;
+                        const progress = (pkg.days_completed / pkg.duration_days) * 100;
+                        return `
+                        <div class="active-package-item">
+                            <div class="package-info">
+                                <h4>${name}</h4>
+                                <p>${pkg.price} AZN → ${pkg.total_return || (pkg.price + pkg.total_earned).toFixed(2)} AZN</p>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progress}%"></div>
+                                </div>
+                            </div>
+                            <div class="package-stats">
+                                <div class="earned">+${parseFloat(pkg.total_earned).toFixed(2)} AZN</div>
+                                <div class="remaining">${pkg.remaining_days} gün qaldı</div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+
+                // Bildirişlər
+                const notifList = document.getElementById('notifications-list');
+                if (data.notifications && data.notifications.length > 0) {
+                    const msgKey = lang === 'az' ? 'message_az' : lang === 'ru' ? 'message_ru' : 'message_en';
+                    notifList.innerHTML = data.notifications.slice(0, 5).map(n => `
+                        <div class="alert alert-${n.type === 'success' ? 'success' : n.type === 'error' ? 'warning' : 'info'}" style="margin-bottom: 8px; font-size: 0.85rem;">
+                            ${n[msgKey] || n.message_az}
+                        </div>
+                    `).join('');
+                }
+
+                if (data.unreadNotifications > 0) {
+                    const badge = document.getElementById('unread-badge');
+                    badge.textContent = data.unreadNotifications;
+                    badge.style.display = '';
+                    // Bildirişləri oxunmuş et
+                    App.apiRequest('/api/user/notifications/read', { method: 'PUT' });
+                }
+            } catch (error) {
+                console.error('Dashboard xətası:', error);
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const data = await App.apiRequest('/api/user/history');
+                const lang = I18n.currentLang || 'az';
+                const tbody = document.getElementById('history-body');
+
+                const items = [];
+
+                data.payments.forEach(p => {
+                    const name = packageNames[p.name_key]?.[lang] || p.name_key;
+                    items.push({
+                        date: p.created_at,
+                        type: `📦 ${name}`,
+                        amount: p.price + ' AZN',
+                        status: p.status
+                    });
+                });
+
+                data.withdrawals.forEach(w => {
+                    items.push({
+                        date: w.created_at,
+                        type: '💸 Çıxarış',
+                        amount: w.amount + ' AZN',
+                        status: w.status
+                    });
+                });
+
+                items.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                if (items.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted" style="padding: 24px;">Tarixçə boşdur</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = items.slice(0, 10).map(item => `
+                    <tr>
+                        <td>${App.formatDate(item.date)}</td>
+                        <td>${item.type}</td>
+                        <td>${item.amount}</td>
+                        <td><span class="badge badge-${item.status}">${item.status}</span></td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Tarixçə xətası:', error);
+            }
+        }
+
+        function copyReferralLink() {
+            const input = document.getElementById('referral-link');
+            input.select();
+            navigator.clipboard.writeText(input.value).then(() => {
+                App.showNotification(I18n.t('referral_page.copied') || 'Kopyalandı!', 'success');
+            });
+        }
+    </script>
+</body>
+</html>

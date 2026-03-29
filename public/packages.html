@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebBank - Paketlər</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo"><span class="logo-icon">🏦</span><span>WebBank</span></a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/" data-i18n="nav.home">Ana Səhifə</a></li>
+                <li><a href="/packages" class="active" data-i18n="nav.packages">Paketlər</a></li>
+                <li><a href="/about" data-i18n="nav.about">Haqqımızda</a></li>
+                <li class="nav-guest"><a href="/login" data-i18n="nav.login">Giriş</a></li>
+                <li class="nav-guest"><a href="/register" class="nav-btn" data-i18n="nav.register">Qeydiyyat</a></li>
+                <li class="nav-auth" style="display:none"><a href="/dashboard" data-i18n="nav.dashboard">İdarə paneli</a></li>
+                <li class="nav-auth" style="display:none"><a href="#" class="logout-btn" data-i18n="nav.logout">Çıxış</a></li>
+                <li id="lang-container"></li>
+            </ul>
+            <div class="menu-toggle" id="menu-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="section-header" style="padding-top: 20px;">
+            <h2 data-i18n="packages_page.title">İnvestisiya Paketləri</h2>
+            <p data-i18n="packages_page.subtitle">Sizə uyğun paketi seçin və qazanmağa başlayın</p>
+        </div>
+        <div class="packages-grid" id="packages-list"></div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">🏦 WebBank</div>
+        </div>
+        <div class="footer-bottom" data-i18n="footer.copyright">© 2024 WebBank. Bütün hüquqlar qorunur.</div>
+    </footer>
+
+    <script src="/js/i18n.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const langContainer = document.getElementById('lang-container');
+            if (langContainer) langContainer.innerHTML = I18n.createSelector();
+            loadPackages();
+        });
+
+        async function loadPackages() {
+            try {
+                const res = await fetch('/api/packages');
+                const data = await res.json();
+                const container = document.getElementById('packages-list');
+                const lang = I18n.currentLang || 'az';
+
+                const names = {
+                    basic: { az: 'Əsas Paket', ru: 'Базовый Пакет', en: 'Basic Package' },
+                    standard: { az: 'Standart Paket', ru: 'Стандартный Пакет', en: 'Standard Package' },
+                    premium: { az: 'Premium Paket', ru: 'Премиум Пакет', en: 'Premium Package' }
+                };
+
+                const descs = {
+                    basic: { az: 'Başlanğıc investorlar üçün ideal seçim', ru: 'Идеальный выбор для начинающих', en: 'Ideal for beginner investors' },
+                    standard: { az: 'Orta səviyyəli investorlar üçün', ru: 'Для опытных инвесторов', en: 'For mid-level investors' },
+                    premium: { az: 'Maksimum gəlir əldə etmək istəyənlər üçün', ru: 'Для максимального дохода', en: 'For those who want maximum returns' }
+                };
+
+                const colors = ['btn-primary', 'btn-success', 'btn-gold'];
+
+                container.innerHTML = data.packages.map((pkg, i) => {
+                    const name = names[pkg.name_key]?.[lang] || pkg.name_key;
+                    const desc = descs[pkg.name_key]?.[lang] || '';
+                    const dailyProfit = pkg.daily_profit_fixed
+                        ? `~${pkg.daily_profit_fixed.toFixed(2)} AZN/gün`
+                        : `${pkg.daily_profit_percent}%/gün`;
+                    const totalProfit = (pkg.total_return - pkg.price).toFixed(2);
+                    const isFeatured = i === 2;
+
+                    return `
+                    <div class="card package-card ${isFeatured ? 'featured' : ''}" style="animation: fadeInUp ${0.3 + i * 0.2}s ease">
+                        ${isFeatured ? '<span class="package-badge">⭐ TOP</span>' : ''}
+                        <div class="package-header">
+                            <h3>${name}</h3>
+                            <p>${desc}</p>
+                        </div>
+                        <div class="package-price">
+                            <span class="price">${pkg.price}</span>
+                            <span class="currency"> AZN</span>
+                        </div>
+                        <div class="package-details">
+                            <div class="package-detail-item">
+                                <span class="label">📊 Gəlir Faizi</span>
+                                <span class="value">${pkg.profit_percent}%</span>
+                            </div>
+                            <div class="package-detail-item">
+                                <span class="label">📅 Günlük Gəlir</span>
+                                <span class="value">${dailyProfit}</span>
+                            </div>
+                            <div class="package-detail-item">
+                                <span class="label">💰 Net Gəlir</span>
+                                <span class="value">+${totalProfit} AZN</span>
+                            </div>
+                            <div class="package-detail-item">
+                                <span class="label">🏆 Ümumi Gəlir</span>
+                                <span class="value">${pkg.total_return} AZN</span>
+                            </div>
+                            <div class="package-detail-item">
+                                <span class="label">⏱️ Müddət</span>
+                                <span class="value">${pkg.duration_days} gün</span>
+                            </div>
+                        </div>
+                        <div class="package-footer">
+                            <a href="/payment?package=${pkg.id}" class="btn ${colors[i]} btn-block btn-lg">
+                                İndi Al →
+                            </a>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (error) {
+                console.error('Paket yükləmə xətası:', error);
+            }
+        }
+    </script>
+</body>
+</html>

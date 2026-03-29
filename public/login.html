@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WebBank hesabınıza daxil olun">
+    <title>WebBank - Giriş</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-logo"><span class="logo-icon">🏦</span><span>WebBank</span></a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/" data-i18n="nav.home">Ana Səhifə</a></li>
+                <li><a href="/packages" data-i18n="nav.packages">Paketlər</a></li>
+                <li><a href="/about" data-i18n="nav.about">Haqqımızda</a></li>
+                <li><a href="/login" class="active" data-i18n="nav.login">Giriş</a></li>
+                <li><a href="/register" class="nav-btn" data-i18n="nav.register">Qeydiyyat</a></li>
+                <li id="lang-container"></li>
+            </ul>
+            <div class="menu-toggle" id="menu-toggle"><span></span><span></span><span></span></div>
+        </div>
+    </nav>
+
+    <div class="form-container">
+        <div class="form-card" style="animation: fadeInUp 0.6s ease">
+            <h2 data-i18n="auth.login_title">Hesabınıza Daxil Olun</h2>
+            <p class="form-subtitle">WebBank investisiya platforması</p>
+
+            <div class="error-message" id="error-msg"></div>
+
+            <form id="login-form" autocomplete="on">
+                <div class="form-group">
+                    <label data-i18n="auth.email">Email ünvanı</label>
+                    <input type="email" class="form-control" id="email" name="email" required
+                           placeholder="ornek@email.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="auth.password">Şifrə</label>
+                    <input type="password" class="form-control" id="password" name="password" required
+                           placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-btn" data-i18n="auth.login_btn">
+                    Daxil Ol
+                </button>
+            </form>
+
+            <p class="form-text">
+                <span data-i18n="auth.no_account">Hesabınız yoxdur?</span>
+                <a href="/register" data-i18n="auth.register_link">Qeydiyyatdan keçin</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="/js/i18n.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const langContainer = document.getElementById('lang-container');
+            if (langContainer) langContainer.innerHTML = I18n.createSelector();
+
+            if (App.user) {
+                window.location.href = '/dashboard';
+                return;
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('login-btn');
+            const errorMsg = document.getElementById('error-msg');
+            errorMsg.style.display = 'none';
+
+            App.showLoading(btn);
+
+            try {
+                const data = await App.apiRequest('/api/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+
+                if (data.success) {
+                    window.location.href = '/dashboard';
+                }
+            } catch (error) {
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+            } finally {
+                App.hideLoading(btn);
+            }
+        });
+    </script>
+</body>
+</html>
