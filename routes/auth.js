@@ -58,10 +58,17 @@ router.post('/register', async (req, res) => {
 
         req.session.userId = result.lastInsertRowid;
 
-        res.status(201).json({
-            success: true,
-            message: 'Qeydiyyat uğurlu! 10 AZN bonus əlavə edildi.',
-            userId: result.lastInsertRowid
+        // Session-u PostgreSQL-ə save et, sonra cavab göndər
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save xətası:', err);
+                return res.status(500).json({ error: 'Session xətası' });
+            }
+            res.status(201).json({
+                success: true,
+                message: 'Qeydiyyat uğurlu! 10 AZN bonus əlavə edildi.',
+                userId: result.lastInsertRowid
+            });
         });
     } catch (error) {
         console.error('Qeydiyyat xətası:', error);
@@ -92,10 +99,17 @@ router.post('/login', async (req, res) => {
 
         req.session.userId = user.id;
 
-        res.json({
-            success: true,
-            message: 'Giriş uğurlu!',
-            user: { id: user.id, email: user.email, full_name: user.full_name, balance: user.balance }
+        // Session-u PostgreSQL-ə save et, sonra cavab göndər
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save xətası:', err);
+                return res.status(500).json({ error: 'Session xətası' });
+            }
+            res.json({
+                success: true,
+                message: 'Giriş uğurlu!',
+                user: { id: user.id, email: user.email, full_name: user.full_name, balance: user.balance }
+            });
         });
     } catch (error) {
         console.error('Giriş xətası:', error);
