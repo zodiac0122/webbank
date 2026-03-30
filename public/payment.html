@@ -88,6 +88,8 @@
             const langContainer = document.getElementById('lang-container');
             if (langContainer) langContainer.innerHTML = I18n.createSelector();
 
+            await App.init();
+
             if (!App.user) {
                 window.location.href = '/login';
                 return;
