@@ -4,11 +4,19 @@
 
 const App = {
     user: null,
+    _initPromise: null,
 
     /**
      * Tətbiqi başlat
      */
     async init() {
+        if (!this._initPromise) {
+            this._initPromise = this._doInit();
+        }
+        return this._initPromise;
+    },
+
+    async _doInit() {
         await this.checkAuth();
         this.setupNavigation();
         this.setupAnimations();
@@ -19,7 +27,7 @@ const App = {
      */
     async checkAuth() {
         try {
-            const res = await fetch('/api/auth/me');
+            const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
             const data = await res.json();
 
             if (data.authenticated) {
@@ -86,7 +94,8 @@ const App = {
         const defaultOptions = {
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: 'same-origin'
         };
 
         const mergedOptions = {
@@ -95,7 +104,8 @@ const App = {
             headers: {
                 ...defaultOptions.headers,
                 ...(options.headers || {})
-            }
+            },
+            credentials: 'same-origin'
         };
 
         // FormData üçün Content-Type silmək lazımdır
