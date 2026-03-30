@@ -82,6 +82,8 @@
             }
 
             // Artıq giriş edibsə dashboard-a yönləndir
+            await App.init();
+
             if (App.user) {
                 window.location.href = '/dashboard';
                 return;
