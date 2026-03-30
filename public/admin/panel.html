@@ -5,6 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebBank - Admin Panel</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Admin Panel xüsusi stillər */
+        .admin-container { display: flex; min-height: 100vh; }
+        .admin-sidebar {
+            width: 260px; min-height: 100vh; background: rgba(10, 14, 26, 0.95);
+            border-right: 1px solid var(--border-color); position: fixed; top: 0; left: 0;
+            z-index: 100; backdrop-filter: blur(20px); overflow-y: auto;
+        }
+        .sidebar-header { padding: 24px 20px; border-bottom: 1px solid var(--border-color); }
+        .sidebar-header h2 { font-size: 1.3rem; margin-bottom: 2px; }
+        .sidebar-nav { list-style: none; padding: 12px 8px; }
+        .sidebar-nav li { margin-bottom: 2px; }
+        .sidebar-nav a {
+            display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+            color: var(--text-secondary); text-decoration: none; border-radius: var(--radius-sm);
+            font-weight: 500; font-size: 0.9rem; transition: var(--transition-fast);
+        }
+        .sidebar-nav a:hover { background: var(--bg-glass-hover); color: var(--text-primary); }
+        .sidebar-nav a.active { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); }
+        .nav-badge {
+            background: var(--accent-red); color: white; font-size: 0.7rem; padding: 2px 7px;
+            border-radius: 10px; font-weight: 700; margin-left: auto;
+        }
+        .admin-main { margin-left: 260px; padding: 32px; width: calc(100% - 260px); position: relative; z-index: 1; }
+        .admin-section { display: none; }
+        .admin-section.active { display: block; animation: fadeInUp 0.3s ease; }
+        .admin-section h1 { font-size: 1.6rem; font-weight: 800; margin-bottom: 24px; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl); padding: 32px; max-width: 700px; width: 90%;
+            max-height: 85vh; overflow-y: auto; position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 16px; right: 16px; background: none; border: none;
+            color: var(--text-secondary); font-size: 1.5rem; cursor: pointer; padding: 4px 10px;
+            border-radius: var(--radius-sm);
+        }
+        .modal-close:hover { background: var(--bg-glass-hover); color: var(--text-primary); }
+        .modal h2 { margin-bottom: 20px; font-size: 1.3rem; }
+
+        /* İstifadəçi detay bölmələri */
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .detail-item { background: var(--bg-glass); padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); }
+        .detail-item .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .detail-item .value { font-size: 1rem; font-weight: 600; }
+
+        /* Inline edit */
+        .inline-edit { display: flex; gap: 8px; align-items: center; }
+        .inline-edit input { width: 120px; padding: 6px 10px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.9rem; }
+
+        /* Axtarış sahəsi */
+        .search-bar { margin-bottom: 20px; }
+        .search-bar input { width: 100%; max-width: 400px; }
+
+        /* Responsiv */
+        @media (max-width: 768px) {
+            .admin-sidebar { width: 60px; padding: 0; }
+            .admin-sidebar .sidebar-header h2, .admin-sidebar .sidebar-header p,
+            .sidebar-nav a span:not(.nav-badge) { display: none; }
+            .sidebar-nav a { justify-content: center; padding: 14px; font-size: 1.2rem; }
+            .admin-main { margin-left: 60px; width: calc(100% - 60px); padding: 16px; }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Tab stillər */
+        .tab-buttons { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { padding: 8px 20px; border: 1px solid var(--border-color); background: var(--bg-glass); color: var(--text-secondary); border-radius: var(--radius-sm); cursor: pointer; font-family: var(--font-main); font-weight: 500; font-size: 0.85rem; transition: var(--transition-fast); }
+        .tab-btn:hover { background: var(--bg-glass-hover); color: var(--text-primary); }
+        .tab-btn.active { background: rgba(59, 130, 246, 0.15); border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        /* Canlı dəstək chat */
+        .chat-messages { max-height: 400px; overflow-y: auto; padding: 16px; }
+        .chat-message { margin-bottom: 12px; max-width: 80%; padding: 12px 16px; border-radius: 12px; font-size: 0.9rem; line-height: 1.5; }
+        .chat-message.admin { margin-left: auto; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.2); }
+        .chat-message.user { background: var(--bg-glass); border: 1px solid var(--border-color); }
+        .message-time { display: block; font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
+        .chat-input-container { display: flex; gap: 8px; padding: 12px; }
+    </style>
 </head>
 <body>
     <div class="admin-container">
@@ -15,81 +101,60 @@
                 <p class="text-muted" style="font-size: 0.8rem; margin-top: 4px;">WebBank İdarəetmə</p>
             </div>
             <ul class="sidebar-nav">
-                <li><a href="#" onclick="showSection('stats')" class="active" id="nav-stats">📊 Statistika</a></li>
-                <li><a href="#" onclick="showSection('users')" id="nav-users">👥 İstifadəçilər</a></li>
-                <li><a href="#" onclick="showSection('payments')" id="nav-payments">💳 Ödənişlər <span class="nav-badge" id="badge-payments" style="display:none"></span></a></li>
-                <li><a href="#" onclick="showSection('withdrawals')" id="nav-withdrawals">💸 Çıxarışlar <span class="nav-badge" id="badge-withdrawals" style="display:none"></span></a></li>
-                <li><a href="#" onclick="showSection('support')" id="nav-support">💬 Dəstək <span class="nav-badge" id="badge-support" style="display:none"></span></a></li>
-                <li><a href="#" onclick="showSection('notifications')" id="nav-notifications">🔔 Bildirişlər</a></li>
-                <li><a href="#" onclick="adminLogout()">🚪 Çıxış</a></li>
+                <li><a href="#" onclick="showSection('stats')" class="active" id="nav-stats"><span>📊</span> <span>Statistika</span></a></li>
+                <li><a href="#" onclick="showSection('users')" id="nav-users"><span>👥</span> <span>İstifadəçilər</span></a></li>
+                <li><a href="#" onclick="showSection('payments')" id="nav-payments"><span>💳</span> <span>Ödənişlər</span> <span class="nav-badge" id="badge-payments" style="display:none"></span></a></li>
+                <li><a href="#" onclick="showSection('withdrawals')" id="nav-withdrawals"><span>💸</span> <span>Çıxarışlar</span> <span class="nav-badge" id="badge-withdrawals" style="display:none"></span></a></li>
+                <li><a href="#" onclick="showSection('support')" id="nav-support"><span>💬</span> <span>Dəstək</span> <span class="nav-badge" id="badge-support" style="display:none"></span></a></li>
+                <li><a href="#" onclick="adminLogout()"><span>🚪</span> <span>Çıxış</span></a></li>
             </ul>
         </aside>
 
         <!-- Main Content -->
         <main class="admin-main">
-            <!-- Statistika Bölməsi -->
+            <!-- Statistika -->
             <div class="admin-section active" id="section-stats">
-                <h1 style="margin-bottom: 24px;">📊 Statistika</h1>
+                <h1>📊 Ümumi Statistika</h1>
                 <div class="stats-grid">
                     <div class="card stat-card">
                         <div class="stat-icon blue">👥</div>
-                        <div class="stat-info">
-                            <h3>Ümumi İstifadəçilər</h3>
-                            <div class="stat-value text-blue" id="s-users">0</div>
-                        </div>
+                        <div class="stat-info"><h3>İstifadəçilər</h3><div class="stat-value text-blue" id="s-users">0</div></div>
                     </div>
                     <div class="card stat-card">
                         <div class="stat-icon amber">💳</div>
-                        <div class="stat-info">
-                            <h3>Gözləyən Ödənişlər</h3>
-                            <div class="stat-value text-amber" id="s-payments">0</div>
-                        </div>
+                        <div class="stat-info"><h3>Gözləyən Ödənişlər</h3><div class="stat-value text-amber" id="s-payments">0</div></div>
                     </div>
                     <div class="card stat-card">
                         <div class="stat-icon red">💸</div>
-                        <div class="stat-info">
-                            <h3>Gözləyən Çıxarışlar</h3>
-                            <div class="stat-value text-amber" id="s-withdrawals">0</div>
-                        </div>
+                        <div class="stat-info"><h3>Gözləyən Çıxarışlar</h3><div class="stat-value text-amber" id="s-withdrawals">0</div></div>
                     </div>
                     <div class="card stat-card">
                         <div class="stat-icon green">💰</div>
-                        <div class="stat-info">
-                            <h3>Ümumi Balans</h3>
-                            <div class="stat-value text-green" id="s-balance">0</div>
-                        </div>
+                        <div class="stat-info"><h3>Ümumi Balans</h3><div class="stat-value text-green" id="s-balance">0</div></div>
                     </div>
                     <div class="card stat-card">
                         <div class="stat-icon purple">📦</div>
-                        <div class="stat-info">
-                            <h3>Aktiv Paketlər</h3>
-                            <div class="stat-value text-purple" id="s-packages">0</div>
-                        </div>
+                        <div class="stat-info"><h3>Aktiv Paketlər</h3><div class="stat-value text-purple" id="s-packages">0</div></div>
                     </div>
                     <div class="card stat-card">
                         <div class="stat-icon cyan">💬</div>
-                        <div class="stat-info">
-                            <h3>Oxunmamış Mesajlar</h3>
-                            <div class="stat-value text-blue" id="s-messages">0</div>
-                        </div>
+                        <div class="stat-info"><h3>Oxunmamış Mesajlar</h3><div class="stat-value text-blue" id="s-messages">0</div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- İstifadəçilər Bölməsi -->
+            <!-- İstifadəçilər -->
             <div class="admin-section" id="section-users">
-                <h1 style="margin-bottom: 24px;">👥 İstifadəçilər</h1>
+                <h1>👥 İstifadəçilər</h1>
+                <div class="search-bar">
+                    <input type="text" class="form-control" id="user-search" placeholder="🔍 Email və ya ad ilə axtar..." oninput="filterUsers()">
+                </div>
                 <div class="card">
                     <div class="table-container">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Email</th>
-                                    <th>Ad</th>
-                                    <th>Balans</th>
-                                    <th>Gəlir</th>
-                                    <th>Qeydiyyat</th>
+                                    <th>ID</th><th>Email</th><th>Ad</th><th>Balans</th><th>Gəlir</th><th>Ref. Kod</th><th>Qeydiyyat</th><th>Əməliyyat</th>
                                 </tr>
                             </thead>
                             <tbody id="users-table"></tbody>
@@ -98,27 +163,20 @@
                 </div>
             </div>
 
-            <!-- Ödənişlər Bölməsi -->
+            <!-- Ödənişlər -->
             <div class="admin-section" id="section-payments">
-                <h1 style="margin-bottom: 24px;">💳 Ödənişlər</h1>
-                <div class="d-flex gap-2 mb-3">
-                    <button class="btn btn-primary btn-sm" onclick="loadPayments('pending')">Gözləyən</button>
-                    <button class="btn btn-secondary btn-sm" onclick="loadPayments('approved')">Təsdiqlənmiş</button>
-                    <button class="btn btn-secondary btn-sm" onclick="loadPayments('rejected')">Rədd edilmiş</button>
+                <h1>💳 Ödənişlər</h1>
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="loadPayments('pending', this)">🕐 Gözləyən</button>
+                    <button class="tab-btn" onclick="loadPayments('approved', this)">✅ Təsdiqlənmiş</button>
+                    <button class="tab-btn" onclick="loadPayments('rejected', this)">❌ Rədd edilmiş</button>
                 </div>
                 <div class="card">
                     <div class="table-container">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>İstifadəçi</th>
-                                    <th>Paket</th>
-                                    <th>Məbləğ</th>
-                                    <th>Telefon</th>
-                                    <th>Qəbz</th>
-                                    <th>Status</th>
-                                    <th>Əməliyyat</th>
+                                    <th>ID</th><th>İstifadəçi</th><th>Paket</th><th>Məbləğ</th><th>Telefon</th><th>Qəbz</th><th>Tarix</th><th>Status</th><th>Əməliyyat</th>
                                 </tr>
                             </thead>
                             <tbody id="payments-table"></tbody>
@@ -127,26 +185,20 @@
                 </div>
             </div>
 
-            <!-- Çıxarışlar Bölməsi -->
+            <!-- Çıxarışlar -->
             <div class="admin-section" id="section-withdrawals">
-                <h1 style="margin-bottom: 24px;">💸 Çıxarışlar</h1>
-                <div class="d-flex gap-2 mb-3">
-                    <button class="btn btn-primary btn-sm" onclick="loadWithdrawals('pending')">Gözləyən</button>
-                    <button class="btn btn-secondary btn-sm" onclick="loadWithdrawals('approved')">Təsdiqlənmiş</button>
-                    <button class="btn btn-secondary btn-sm" onclick="loadWithdrawals('rejected')">Rədd edilmiş</button>
+                <h1>💸 Çıxarışlar</h1>
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="loadWithdrawals('pending', this)">🕐 Gözləyən</button>
+                    <button class="tab-btn" onclick="loadWithdrawals('approved', this)">✅ Təsdiqlənmiş</button>
+                    <button class="tab-btn" onclick="loadWithdrawals('rejected', this)">❌ Rədd edilmiş</button>
                 </div>
                 <div class="card">
                     <div class="table-container">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>İstifadəçi</th>
-                                    <th>Məbləğ</th>
-                                    <th>Kart</th>
-                                    <th>Telefon</th>
-                                    <th>Status</th>
-                                    <th>Əməliyyat</th>
+                                    <th>ID</th><th>İstifadəçi</th><th>Məbləğ</th><th>Kart</th><th>Telefon</th><th>Tarix</th><th>Status</th><th>Əməliyyat</th>
                                 </tr>
                             </thead>
                             <tbody id="withdrawals-table"></tbody>
@@ -155,55 +207,54 @@
                 </div>
             </div>
 
-            <!-- Dəstək Bölməsi -->
+            <!-- Dəstək -->
             <div class="admin-section" id="section-support">
-                <h1 style="margin-bottom: 24px;">💬 Dəstək Mesajları</h1>
+                <h1>💬 Canlı Dəstək</h1>
                 <div id="support-conversations"></div>
                 <div id="support-chat" style="display:none">
-                    <button class="btn btn-secondary btn-sm mb-3" onclick="backToConversations()">← Geri</button>
-                    <div class="card">
-                        <h3 id="chat-user-name" style="margin-bottom: 16px;"></h3>
-                        <div class="chat-messages" id="admin-chat-messages" style="max-height: 400px;"></div>
-                        <div class="chat-input-container mt-2">
-                            <input type="text" class="form-control" id="admin-reply-input" placeholder="Cavab yazın...">
-                            <button class="btn btn-primary" onclick="sendAdminReply()">Göndər</button>
+                    <button class="btn btn-secondary btn-sm mb-3" onclick="backToConversations()">← Söhbətlərə qayıt</button>
+                    <div class="card" style="padding: 0;">
+                        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 1.5rem;">👤</span>
+                            <div>
+                                <h3 id="chat-user-name" style="font-size: 1rem; margin: 0;"></h3>
+                                <small id="chat-user-email" class="text-muted"></small>
+                            </div>
+                        </div>
+                        <div class="chat-messages" id="admin-chat-messages"></div>
+                        <div class="chat-input-container" style="border-top: 1px solid var(--border-color);">
+                            <input type="text" class="form-control" id="admin-reply-input" placeholder="Cavab yazın..." style="flex:1;">
+                            <button class="btn btn-primary btn-sm" onclick="sendAdminReply()">Göndər</button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Bildirişlər Bölməsi -->
-            <div class="admin-section" id="section-notifications">
-                <h1 style="margin-bottom: 24px;">🔔 Bildirişlər</h1>
-                <div id="admin-notifications-list"></div>
-            </div>
         </main>
     </div>
 
-    <script src="/js/i18n.js"></script>
+    <!-- İstifadəçi Detalları Modal -->
+    <div class="modal-overlay" id="user-modal">
+        <div class="modal">
+            <button class="modal-close" onclick="closeUserModal()">✕</button>
+            <h2 id="modal-user-title">İstifadəçi Detalları</h2>
+            <div id="modal-user-content"></div>
+        </div>
+    </div>
+
     <script src="/js/app.js"></script>
     <script>
         let currentChatUserId = null;
+        let allUsers = [];
 
         document.addEventListener('DOMContentLoaded', async () => {
-
             // Admin auth yoxla
             try {
-                const res = await fetch('/api/admin/check');
+                const res = await fetch('/api/admin/check', { credentials: 'same-origin' });
                 const data = await res.json();
-                if (!data.authenticated) {
-                    window.location.href = '/idaretmepanel';
-                    return;
-                }
-            } catch (e) {
-                window.location.href = '/idaretmepanel';
-                return;
-            }
+                if (!data.authenticated) { window.location.href = '/idaretmepanel'; return; }
+            } catch (e) { window.location.href = '/idaretmepanel'; return; }
 
             loadStats();
-            loadPayments('pending');
-            loadWithdrawals('pending');
-
             // Hər 30 saniyə yenilə
             setInterval(loadStats, 30000);
         });
@@ -211,15 +262,13 @@
         function showSection(name) {
             document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
-
             document.getElementById('section-' + name).classList.add('active');
-            document.getElementById('nav-' + name).classList.add('active');
+            document.getElementById('nav-' + name)?.classList.add('active');
 
             if (name === 'users') loadUsers();
             if (name === 'payments') loadPayments('pending');
             if (name === 'withdrawals') loadWithdrawals('pending');
             if (name === 'support') loadConversations();
-            if (name === 'notifications') loadAdminNotifications();
         }
 
         async function loadStats() {
@@ -231,8 +280,6 @@
                 document.getElementById('s-balance').textContent = parseFloat(data.totalBalance).toFixed(2) + ' AZN';
                 document.getElementById('s-packages').textContent = data.activePackages;
                 document.getElementById('s-messages').textContent = data.unreadMessages;
-
-                // Badge-ləri yenilə
                 updateBadge('badge-payments', data.pendingPayments);
                 updateBadge('badge-withdrawals', data.pendingWithdrawals);
                 updateBadge('badge-support', data.unreadMessages);
@@ -241,34 +288,143 @@
 
         function updateBadge(id, count) {
             const badge = document.getElementById(id);
-            if (count > 0) {
-                badge.textContent = count;
-                badge.style.display = '';
-            } else {
-                badge.style.display = 'none';
-            }
+            if (count > 0) { badge.textContent = count; badge.style.display = ''; }
+            else { badge.style.display = 'none'; }
         }
 
+        // ===== İSTİFADƏÇİLƏR =====
         async function loadUsers() {
             try {
                 const data = await App.apiRequest('/api/admin/users');
-                const tbody = document.getElementById('users-table');
-                tbody.innerHTML = data.users.map(u => `
-                    <tr>
-                        <td>${u.id}</td>
-                        <td>${u.email}</td>
-                        <td>${u.full_name || '-'}</td>
-                        <td class="text-green fw-bold">${parseFloat(u.balance).toFixed(2)} AZN</td>
-                        <td>${parseFloat(u.total_earnings).toFixed(2)} AZN</td>
-                        <td>${new Date(u.created_at).toLocaleDateString()}</td>
-                    </tr>
-                `).join('') || '<tr><td colspan="6" class="text-center text-muted">İstifadəçi yoxdur</td></tr>';
+                allUsers = data.users;
+                renderUsers(allUsers);
             } catch (e) { console.error(e); }
         }
 
+        function renderUsers(users) {
+            const tbody = document.getElementById('users-table');
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td>${u.id}</td>
+                    <td>${u.email}</td>
+                    <td>${u.full_name || '-'}</td>
+                    <td class="text-green fw-bold">${parseFloat(u.balance).toFixed(2)} AZN</td>
+                    <td>${parseFloat(u.total_earnings).toFixed(2)} AZN</td>
+                    <td><code style="font-size:0.75rem; color:var(--accent-cyan);">${u.referral_code}</code></td>
+                    <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="viewUser(${u.id})" style="margin:2px; padding: 6px 12px; font-size: 0.8rem;">👁 Bax</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id}, '${u.email}')" style="margin:2px; padding: 6px 12px; font-size: 0.8rem;">🗑 Sil</button>
+                    </td>
+                </tr>
+            `).join('') || '<tr><td colspan="8" class="text-center text-muted" style="padding:24px;">İstifadəçi yoxdur</td></tr>';
+        }
+
+        function filterUsers() {
+            const q = document.getElementById('user-search').value.toLowerCase();
+            const filtered = allUsers.filter(u =>
+                u.email.toLowerCase().includes(q) || (u.full_name || '').toLowerCase().includes(q)
+            );
+            renderUsers(filtered);
+        }
+
+        async function viewUser(userId) {
+            try {
+                const data = await App.apiRequest('/api/admin/users/' + userId);
+                const u = data.user;
+                const pkgNames = { basic: 'Əsas', standard: 'Standart', premium: 'Premium' };
+
+                document.getElementById('modal-user-title').textContent = `👤 ${u.full_name || u.email}`;
+                document.getElementById('modal-user-content').innerHTML = `
+                    <div class="detail-grid">
+                        <div class="detail-item"><div class="label">Email</div><div class="value">${u.email}</div></div>
+                        <div class="detail-item"><div class="label">Ad Soyad</div><div class="value">${u.full_name || '-'}</div></div>
+                        <div class="detail-item">
+                            <div class="label">Balans</div>
+                            <div class="value">
+                                <div class="inline-edit">
+                                    <input type="number" id="edit-balance" value="${parseFloat(u.balance).toFixed(2)}" step="0.01">
+                                    <button class="btn btn-success btn-sm" onclick="updateBalance(${u.id})" style="padding:5px 12px; font-size:0.8rem;">💾 Saxla</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-item"><div class="label">Ümumi Gəlir</div><div class="value text-green">${parseFloat(u.total_earnings).toFixed(2)} AZN</div></div>
+                        <div class="detail-item"><div class="label">Referral Kod</div><div class="value" style="color:var(--accent-cyan);">${u.referral_code}</div></div>
+                        <div class="detail-item"><div class="label">Qeydiyyat</div><div class="value">${new Date(u.created_at).toLocaleString()}</div></div>
+                    </div>
+
+                    ${data.packages.length > 0 ? `
+                        <h3 style="margin: 20px 0 12px;">📦 Paketləri</h3>
+                        <div class="table-container"><table class="data-table"><thead><tr><th>Paket</th><th>Qiymət</th><th>Qazanc</th><th>Gün</th><th>Status</th></tr></thead><tbody>
+                        ${data.packages.map(p => `<tr>
+                            <td>${pkgNames[p.name_key] || p.name_key}</td>
+                            <td>${p.price} AZN</td>
+                            <td class="text-green">${parseFloat(p.total_earned).toFixed(2)} AZN</td>
+                            <td>${p.days_completed}/${p.duration_days}</td>
+                            <td><span class="badge badge-${p.is_active ? 'approved' : 'rejected'}">${p.is_active ? 'Aktiv' : 'Bitib'}</span></td>
+                        </tr>`).join('')}
+                        </tbody></table></div>
+                    ` : ''}
+
+                    ${data.referrals.length > 0 ? `
+                        <h3 style="margin: 20px 0 12px;">👥 Referralları (${data.referrals.length})</h3>
+                        <div class="table-container"><table class="data-table"><thead><tr><th>Email</th><th>Ad</th><th>Tarix</th></tr></thead><tbody>
+                        ${data.referrals.map(r => `<tr><td>${r.email}</td><td>${r.full_name || '-'}</td><td>${new Date(r.created_at).toLocaleDateString()}</td></tr>`).join('')}
+                        </tbody></table></div>
+                    ` : ''}
+
+                    ${data.payments.length > 0 ? `
+                        <h3 style="margin: 20px 0 12px;">💳 Ödənişlər</h3>
+                        <div class="table-container"><table class="data-table"><thead><tr><th>Paket</th><th>Qiymət</th><th>Status</th><th>Tarix</th></tr></thead><tbody>
+                        ${data.payments.map(p => `<tr><td>${pkgNames[p.name_key] || p.name_key}</td><td>${p.price} AZN</td><td><span class="badge badge-${p.status}">${p.status}</span></td><td>${new Date(p.created_at).toLocaleDateString()}</td></tr>`).join('')}
+                        </tbody></table></div>
+                    ` : ''}
+
+                    ${data.withdrawals.length > 0 ? `
+                        <h3 style="margin: 20px 0 12px;">💸 Çıxarışlar</h3>
+                        <div class="table-container"><table class="data-table"><thead><tr><th>Məbləğ</th><th>Kart</th><th>Status</th><th>Tarix</th></tr></thead><tbody>
+                        ${data.withdrawals.map(w => `<tr><td>${w.amount} AZN</td><td>${w.card_number}</td><td><span class="badge badge-${w.status}">${w.status}</span></td><td>${new Date(w.created_at).toLocaleDateString()}</td></tr>`).join('')}
+                        </tbody></table></div>
+                    ` : ''}
+                `;
+                document.getElementById('user-modal').classList.add('active');
+            } catch (e) { App.showNotification(e.message, 'error'); }
+        }
+
+        async function updateBalance(userId) {
+            const amount = document.getElementById('edit-balance').value;
+            if (!confirm(`Balansı ${amount} AZN olaraq dəyişmək istəyirsiniz?`)) return;
+            try {
+                await App.apiRequest('/api/admin/users/' + userId + '/balance', {
+                    method: 'PUT', body: JSON.stringify({ amount: parseFloat(amount) })
+                });
+                App.showNotification('Balans yeniləndi!', 'success');
+                loadUsers();
+            } catch (e) { App.showNotification(e.message, 'error'); }
+        }
+
+        async function deleteUser(userId, email) {
+            if (!confirm(`"${email}" istifadəçisini silmək istəyirsiniz? Bu geri qaytarıla bilməz!`)) return;
+            if (!confirm('Əminsiniz? Bütün məlumatları silinəcək!')) return;
+            try {
+                await App.apiRequest('/api/admin/users/' + userId, { method: 'DELETE' });
+                App.showNotification('İstifadəçi silindi', 'success');
+                loadUsers(); loadStats();
+            } catch (e) { App.showNotification(e.message, 'error'); }
+        }
+
+        function closeUserModal() {
+            document.getElementById('user-modal').classList.remove('active');
+        }
+
+        // ===== ÖDƏNİŞLƏR =====
         const pkgNames = { basic: 'Əsas', standard: 'Standart', premium: 'Premium' };
 
-        async function loadPayments(status) {
+        async function loadPayments(status, btn) {
+            if (btn) {
+                btn.closest('.tab-buttons').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
             try {
                 const data = await App.apiRequest('/api/admin/payments?status=' + status);
                 const tbody = document.getElementById('payments-table');
@@ -276,19 +432,20 @@
                     <tr>
                         <td>${p.id}</td>
                         <td>${p.user_email}<br><small class="text-muted">${p.full_name}</small></td>
-                        <td>${pkgNames[p.name_key] || p.name_key}</td>
-                        <td class="fw-bold">${p.price} AZN</td>
+                        <td><span class="fw-bold">${pkgNames[p.name_key] || p.name_key}</span></td>
+                        <td class="fw-bold text-green">${p.price} AZN</td>
                         <td>${p.phone}</td>
-                        <td><a href="${p.receipt_path}" target="_blank" class="text-blue">🔍 Bax</a></td>
+                        <td><a href="${p.receipt_path}" target="_blank" class="btn btn-secondary btn-sm" style="padding:4px 10px; font-size:0.75rem;">🔍 Qəbz</a></td>
+                        <td>${new Date(p.created_at).toLocaleDateString()}</td>
                         <td><span class="badge badge-${p.status}">${p.status}</span></td>
                         <td>
                             ${p.status === 'pending' ? `
-                                <button class="btn btn-success btn-sm" onclick="approvePayment(${p.id})" style="margin: 2px;">✅ Təsdiqlə</button>
-                                <button class="btn btn-danger btn-sm" onclick="rejectPayment(${p.id})" style="margin: 2px;">❌ Rədd</button>
+                                <button class="btn btn-success btn-sm" onclick="approvePayment(${p.id})" style="margin:2px; padding:6px 12px; font-size:0.8rem;">✅</button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectPayment(${p.id})" style="margin:2px; padding:6px 12px; font-size:0.8rem;">❌</button>
                             ` : '-'}
                         </td>
                     </tr>
-                `).join('') || '<tr><td colspan="8" class="text-center text-muted" style="padding:24px;">Ödəniş yoxdur</td></tr>';
+                `).join('') || '<tr><td colspan="9" class="text-center text-muted" style="padding:24px;">Ödəniş yoxdur</td></tr>';
             } catch (e) { console.error(e); }
         }
 
@@ -296,9 +453,8 @@
             if (!confirm('Bu ödənişi təsdiqləmək istəyirsiniz?')) return;
             try {
                 await App.apiRequest('/api/admin/payments/' + id + '/approve', { method: 'PUT' });
-                App.showNotification('Ödəniş təsdiqləndi!', 'success');
-                loadPayments('pending');
-                loadStats();
+                App.showNotification('Ödəniş təsdiqləndi! Paket aktivləşdirildi.', 'success');
+                loadPayments('pending'); loadStats();
             } catch (e) { App.showNotification(e.message, 'error'); }
         }
 
@@ -307,12 +463,16 @@
             try {
                 await App.apiRequest('/api/admin/payments/' + id + '/reject', { method: 'PUT' });
                 App.showNotification('Ödəniş rədd edildi', 'warning');
-                loadPayments('pending');
-                loadStats();
+                loadPayments('pending'); loadStats();
             } catch (e) { App.showNotification(e.message, 'error'); }
         }
 
-        async function loadWithdrawals(status) {
+        // ===== ÇIXARIŞLAR =====
+        async function loadWithdrawals(status, btn) {
+            if (btn) {
+                btn.closest('.tab-buttons').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
             try {
                 const data = await App.apiRequest('/api/admin/withdrawals?status=' + status);
                 const tbody = document.getElementById('withdrawals-table');
@@ -321,17 +481,18 @@
                         <td>${w.id}</td>
                         <td>${w.user_email}<br><small class="text-muted">${w.user_name || ''}</small></td>
                         <td class="fw-bold text-amber">${w.amount} AZN</td>
-                        <td>${w.card_number}</td>
+                        <td><code style="font-size:0.85rem;">${w.card_number}</code></td>
                         <td>${w.phone}</td>
+                        <td>${new Date(w.created_at).toLocaleDateString()}</td>
                         <td><span class="badge badge-${w.status}">${w.status}</span></td>
                         <td>
                             ${w.status === 'pending' ? `
-                                <button class="btn btn-success btn-sm" onclick="approveWithdrawal(${w.id})" style="margin: 2px;">✅ Təsdiqlə</button>
-                                <button class="btn btn-danger btn-sm" onclick="rejectWithdrawal(${w.id})" style="margin: 2px;">❌ Rədd</button>
+                                <button class="btn btn-success btn-sm" onclick="approveWithdrawal(${w.id})" style="margin:2px; padding:6px 12px; font-size:0.8rem;">✅</button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectWithdrawal(${w.id})" style="margin:2px; padding:6px 12px; font-size:0.8rem;">❌</button>
                             ` : '-'}
                         </td>
                     </tr>
-                `).join('') || '<tr><td colspan="7" class="text-center text-muted" style="padding:24px;">Çıxarış yoxdur</td></tr>';
+                `).join('') || '<tr><td colspan="8" class="text-center text-muted" style="padding:24px;">Çıxarış yoxdur</td></tr>';
             } catch (e) { console.error(e); }
         }
 
@@ -340,21 +501,20 @@
             try {
                 await App.apiRequest('/api/admin/withdrawals/' + id + '/approve', { method: 'PUT' });
                 App.showNotification('Çıxarış təsdiqləndi!', 'success');
-                loadWithdrawals('pending');
-                loadStats();
+                loadWithdrawals('pending'); loadStats();
             } catch (e) { App.showNotification(e.message, 'error'); }
         }
 
         async function rejectWithdrawal(id) {
-            if (!confirm('Bu çıxarışı rədd etmək istəyirsiniz?')) return;
+            if (!confirm('Bu çıxarışı rədd etmək istəyirsiniz? Balans geri qaytarılacaq.')) return;
             try {
                 await App.apiRequest('/api/admin/withdrawals/' + id + '/reject', { method: 'PUT' });
                 App.showNotification('Çıxarış rədd edildi, balans geri qaytarıldı', 'warning');
-                loadWithdrawals('pending');
-                loadStats();
+                loadWithdrawals('pending'); loadStats();
             } catch (e) { App.showNotification(e.message, 'error'); }
         }
 
+        // ===== CANLI DƏSTƏK =====
         async function loadConversations() {
             try {
                 const data = await App.apiRequest('/api/admin/support');
@@ -363,57 +523,78 @@
                 container.style.display = '';
 
                 if (data.conversations.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><span class="empty-icon">💬</span><p>Mesaj yoxdur</p></div>';
+                    container.innerHTML = '<div class="empty-state" style="padding:60px 20px; text-align:center;"><span style="font-size:3rem; display:block; margin-bottom:12px;">💬</span><p class="text-muted">Hələ heç bir dəstək mesajı yoxdur</p></div>';
                     return;
                 }
 
                 container.innerHTML = data.conversations.map(c => `
-                    <div class="card" style="margin-bottom: 12px; cursor: pointer; padding: 20px;" onclick="openChat(${c.user_id}, '${c.email}')">
-                        <div class="d-flex justify-between items-center">
+                    <div class="card" style="margin-bottom: 12px; cursor: pointer; padding: 20px; transition: all 0.2s ease;" onclick="openChat(${c.user_id}, '${(c.full_name || c.email).replace(/'/g, "\\'")}', '${c.email}')"
+                         onmouseover="this.style.borderColor='var(--accent-blue)'" onmouseout="this.style.borderColor=''">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <strong>${c.full_name || c.email}</strong>
                                 ${c.unread_count > 0 ? `<span class="badge badge-pending" style="margin-left: 8px;">${c.unread_count} yeni</span>` : ''}
-                                <p class="text-muted" style="font-size: 0.85rem; margin-top: 4px;">${c.last_message?.substring(0, 60) || ''}...</p>
+                                <p class="text-muted" style="font-size: 0.85rem; margin-top: 4px;">${(c.last_message || '').substring(0, 80)}${(c.last_message || '').length > 80 ? '...' : ''}</p>
                             </div>
-                            <span class="text-muted" style="font-size: 0.8rem;">${new Date(c.last_message_time).toLocaleDateString()}</span>
+                            <span class="text-muted" style="font-size: 0.8rem; white-space: nowrap;">${new Date(c.last_message_time).toLocaleString()}</span>
                         </div>
                     </div>
                 `).join('');
             } catch (e) { console.error(e); }
         }
 
-        async function openChat(userId, email) {
+        let chatRefreshInterval = null;
+
+        async function openChat(userId, name, email) {
             currentChatUserId = userId;
             document.getElementById('support-conversations').style.display = 'none';
             document.getElementById('support-chat').style.display = '';
-            document.getElementById('chat-user-name').textContent = '💬 ' + email;
+            document.getElementById('chat-user-name').textContent = name;
+            document.getElementById('chat-user-email').textContent = email;
 
-            try {
-                const data = await App.apiRequest('/api/admin/support/' + userId);
-                const container = document.getElementById('admin-chat-messages');
-                container.innerHTML = data.messages.map(msg => {
-                    const isAdmin = msg.sender_type === 'admin';
-                    const time = new Date(msg.created_at).toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' });
-                    return `
-                    <div class="chat-message ${isAdmin ? 'user' : 'admin'}">
-                        <div style="font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">
-                            ${isAdmin ? '🛡️ Admin' : '👤 İstifadəçi'}
-                        </div>
-                        ${msg.message}
-                        <span class="message-time">${time}</span>
-                    </div>`;
-                }).join('');
-                container.scrollTop = container.scrollHeight;
-            } catch (e) { console.error(e); }
+            await refreshChat();
 
-            // Enter ilə göndər
+            // Hər 5 saniyə yenilə
+            if (chatRefreshInterval) clearInterval(chatRefreshInterval);
+            chatRefreshInterval = setInterval(refreshChat, 5000);
+
             document.getElementById('admin-reply-input').onkeypress = (e) => {
                 if (e.key === 'Enter') sendAdminReply();
             };
+            document.getElementById('admin-reply-input').focus();
+        }
+
+        async function refreshChat() {
+            if (!currentChatUserId) return;
+            try {
+                const data = await App.apiRequest('/api/admin/support/' + currentChatUserId);
+                const container = document.getElementById('admin-chat-messages');
+                const wasAtBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 20;
+
+                container.innerHTML = data.messages.map(msg => {
+                    const isAdmin = msg.sender_type === 'admin';
+                    const time = new Date(msg.created_at).toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit' });
+                    const date = new Date(msg.created_at).toLocaleDateString('az-AZ');
+                    return `
+                    <div class="chat-message ${isAdmin ? 'admin' : 'user'}">
+                        <div style="font-size: 0.75rem; font-weight: 600; margin-bottom: 4px; opacity: 0.8;">
+                            ${isAdmin ? '🛡️ Admin' : '👤 Müştəri'}
+                        </div>
+                        ${msg.message}
+                        <span class="message-time">${date} ${time}</span>
+                    </div>`;
+                }).join('');
+
+                if (wasAtBottom || container.scrollTop === 0) {
+                    container.scrollTop = container.scrollHeight;
+                }
+                loadStats();
+            } catch (e) { console.error(e); }
         }
 
         function backToConversations() {
             currentChatUserId = null;
+            if (chatRefreshInterval) clearInterval(chatRefreshInterval);
             loadConversations();
         }
 
@@ -425,41 +606,23 @@
 
             try {
                 await App.apiRequest('/api/admin/support/' + currentChatUserId, {
-                    method: 'POST',
-                    body: JSON.stringify({ message })
+                    method: 'POST', body: JSON.stringify({ message })
                 });
                 input.value = '';
-                openChat(currentChatUserId, document.getElementById('chat-user-name').textContent.replace('💬 ', ''));
+                await refreshChat();
             } catch (e) { App.showNotification(e.message, 'error'); }
         }
 
-        async function loadAdminNotifications() {
-            try {
-                const data = await App.apiRequest('/api/admin/notifications');
-                const container = document.getElementById('admin-notifications-list');
-
-                if (data.notifications.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><span class="empty-icon">🔔</span><p>Bildiriş yoxdur</p></div>';
-                    return;
-                }
-
-                container.innerHTML = data.notifications.map(n => `
-                    <div class="alert alert-${n.type === 'warning' ? 'warning' : n.type === 'success' ? 'success' : 'info'}" style="margin-bottom: 8px;">
-                        <div>
-                            <div>${n.message_az}</div>
-                            <small class="text-muted">${new Date(n.created_at).toLocaleString()}</small>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (e) { console.error(e); }
-        }
-
+        // ===== ÇIXIŞ =====
         async function adminLogout() {
-            try {
-                await App.apiRequest('/api/admin/logout', { method: 'POST' });
-            } catch (e) {}
+            try { await App.apiRequest('/api/admin/logout', { method: 'POST' }); } catch (e) {}
             window.location.href = '/idaretmepanel';
         }
+
+        // Modal xaricini tıklayanda bağla
+        document.getElementById('user-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeUserModal();
+        });
     </script>
 </body>
 </html>
