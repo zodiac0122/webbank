@@ -4,6 +4,8 @@
 
 const express = require('express');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
+const { Pool } = require('pg');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
@@ -44,12 +46,23 @@ app.use(cookieParser());
 
 app.set('trust proxy', 1);
 
+// PostgreSQL session store - session-lar database-də saxlanılır
+const sessionPool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
+
 app.use(session({
+    store: new pgSession({
+        pool: sessionPool,
+        tableName: 'session',
+        createTableIfMissing: true
+    }),
     secret: process.env.SESSION_SECRET || 'webbank_secret_key_2024_xJ9kL2mN',
     resave: false,
     saveUninitialized: false,
     cookie: {
-        secure: true,
+        secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
         sameSite: 'lax'
