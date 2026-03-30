@@ -20,7 +20,10 @@ router.post('/login', async (req, res) => {
         if (!isMatch) return res.status(401).json({ error: 'Etibarsız admin giriş məlumatları' });
 
         req.session.adminId = admin.id;
-        res.json({ success: true, message: 'Admin girişi uğurlu', admin: { id: admin.id, email: admin.email } });
+        req.session.save((err) => {
+            if (err) return res.status(500).json({ error: 'Session xətası' });
+            res.json({ success: true, message: 'Admin girişi uğurlu', admin: { id: admin.id, email: admin.email } });
+        });
     } catch (error) {
         res.status(500).json({ error: 'Server xətası' });
     }
@@ -214,6 +217,60 @@ router.get('/stats', requireAdmin, async (req, res) => {
             unreadMessages: parseInt(unreadMessages.count),
             activePackages: parseInt(activePackages.count)
         });
+    } catch (error) {
+        res.status(500).json({ error: 'Server xətası' });
+    }
+});
+
+// İstifadəçi balansını dəyiş
+router.put('/users/:id/balance', requireAdmin, async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id);
+        const { amount } = req.body;
+        if (amount === undefined || isNaN(amount)) return res.status(400).json({ error: 'Məbləğ tələb olunur' });
+
+        const user = await getOne('SELECT * FROM users WHERE id = ? AND is_admin = 0', [userId]);
+        if (!user) return res.status(404).json({ error: 'İstifadəçi tapılmadı' });
+
+        await runQuery('UPDATE users SET balance = ? WHERE id = ?', [parseFloat(amount), userId]);
+        res.json({ success: true, message: 'Balans yeniləndi' });
+    } catch (error) {
+        res.status(500).json({ error: 'Server xətası' });
+    }
+});
+
+// İstifadəçi sil
+router.delete('/users/:id', requireAdmin, async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id);
+        const user = await getOne('SELECT * FROM users WHERE id = ? AND is_admin = 0', [userId]);
+        if (!user) return res.status(404).json({ error: 'İstifadəçi tapılmadı' });
+
+        await runQuery('DELETE FROM support_messages WHERE user_id = ?', [userId]);
+        await runQuery('DELETE FROM notifications WHERE user_id = ?', [userId]);
+        await runQuery('DELETE FROM user_packages WHERE user_id = ?', [userId]);
+        await runQuery('DELETE FROM payments WHERE user_id = ?', [userId]);
+        await runQuery('DELETE FROM withdrawals WHERE user_id = ?', [userId]);
+        await runQuery('DELETE FROM users WHERE id = ?', [userId]);
+        res.json({ success: true, message: 'İstifadəçi silindi' });
+    } catch (error) {
+        res.status(500).json({ error: 'Server xətası' });
+    }
+});
+
+// İstifadəçi detalları
+router.get('/users/:id', requireAdmin, async (req, res) => {
+    try {
+        const userId = parseInt(req.params.id);
+        const user = await getOne('SELECT id, email, full_name, balance, total_earnings, referral_code, referred_by, created_at FROM users WHERE id = ? AND is_admin = 0', [userId]);
+        if (!user) return res.status(404).json({ error: 'İstifadəçi tapılmadı' });
+
+        const packages = await getAll('SELECT up.*, p.name_key, p.price, p.total_return FROM user_packages up JOIN packages p ON up.package_id = p.id WHERE up.user_id = ? ORDER BY up.created_at DESC', [userId]);
+        const payments = await getAll('SELECT p.*, pk.name_key, pk.price FROM payments p JOIN packages pk ON p.package_id = pk.id WHERE p.user_id = ? ORDER BY p.created_at DESC', [userId]);
+        const withdrawals = await getAll('SELECT * FROM withdrawals WHERE user_id = ? ORDER BY created_at DESC', [userId]);
+        const referrals = await getAll('SELECT id, email, full_name, created_at FROM users WHERE referred_by = ?', [userId]);
+
+        res.json({ user, packages, payments, withdrawals, referrals });
     } catch (error) {
         res.status(500).json({ error: 'Server xətası' });
     }
