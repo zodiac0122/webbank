@@ -150,6 +150,9 @@
             const langContainer = document.getElementById('lang-container');
             if (langContainer) langContainer.innerHTML = I18n.createSelector();
 
+            // App.init()-in tamamlanmasını gözlə
+            await App.init();
+
             if (!App.user) {
                 window.location.href = '/login';
                 return;
